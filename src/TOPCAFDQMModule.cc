@@ -16,36 +16,51 @@ using namespace std;
 namespace Belle2 {
 	REG_MODULE(TOPCAFDQM)
 
-		TOPCAFDQMModule::TOPCAFDQMModule() : Module(), m_iEvent(0)
-	{
+    TOPCAFDQMModule::TOPCAFDQMModule() : Module(), m_iEvent(0) {
 		setDescription("TOPCAF online monitoring module");
 		addParam("refreshCount", m_refreshCount, "refresh count", 10);
 	}
 
 
-	void TOPCAFDQMModule::defineHisto()
-	{
+	void TOPCAFDQMModule::defineHisto() {
 	}
 
-
-	void TOPCAFDQMModule::initialize()
-	{
-		// Register histograms (calls back defineHisto)
-		//REG_HISTOGRAM;
+	void TOPCAFDQMModule::initialize() {
+        for (int i=0;i<4;i++) {
+            string cname = string("canvas_BS") + to_string(i);
+            m_canvas[i] = new TCanvas(cname.c_str(), cname.c_str(),800,800);
+            m_canvas[i]->Show();
+        }
 	}
 
-
-	void TOPCAFDQMModule::beginRun()
-	{
-		//m_DRAWWAVES = true;
-		//m_DEBUGGING = true;
-		m_dqm_canvas = new TCanvas("dqm_canvas","DQM Canvas",800,600);
-		h_channel = new TH1F("channel","channel", 512, 0.5, 512.5);
-		h_channel->Draw();
-		m_dqm_canvas->Show();
-		//cout<<"DISPLAY: "<<getenv("DISPLAY")<<endl;
-		//usleep(1000000);
+	void TOPCAFDQMModule::beginRun() {
 	}
+
+    void TOPCAFDQMModule::clear_graph() {
+        for (auto scrod_it : m_channels) {
+            int scrod_id = scrod_it.first;
+            for (auto graph_it : scrod_it.second) {
+                int asci_id = graph_it.first;
+                TMultiGraph* mg = graph_it.second;
+                delete mg;
+            }
+            m_channels[scrod_id].clear();
+        }
+    }
+
+    void TOPCAFDQMModule::update_graph() {
+        for (auto scrod_it : m_channels) {
+            int scrod_id = scrod_it.first;
+            for (auto graph_it : scrod_it.second) {
+                int asci_id = graph_it.first;
+                TMultiGraph* mg = graph_it.second;
+                m_canvas[scrod_id]->cd(asicid+1);
+                mg->Draw();
+                m_canvas[scrod_id]->GetPad(asicid+1)->Modified();
+            }
+            m_canvas[scrod_id]->Update();
+        }
+    }
 
 	void TOPCAFDQMModule::drawWaveforms(EventWaveformPacket* ewp) {
 		const EventWaveformPacket& v = *ewp;
@@ -79,53 +94,30 @@ namespace Belle2 {
 		mg->Add(g);
 	}
 
-	void TOPCAFDQMModule::makePlots() {
-		if (m_wf_buffer.size()==0) return;
-		//cout<<"start makePlots"<<endl;
-		for (auto it=m_wf_buffer.begin(); it!=m_wf_buffer.end(); ++it) {
-			h_channel->Fill((it->first) % 512);
-			//h_channel->Fill(256);
-		}
-		//cout<<"after loop"<<endl;
-		if (m_iEvent % m_refreshCount == 0) {
-			//cout<<"-------------------------------------------------------------------------------------------------------"<<endl;
-			//cout<<"total entries: "<<m_iEvent<<endl;
-			m_dqm_canvas->GetPad(0)->Modified();
-			m_dqm_canvas->Update();
-			//h_channel->Draw();
-			//usleep(1000000);
-		}
-		//cout<<"end makePlots"<<endl;
-	}
-
 	void TOPCAFDQMModule::event() {
-		//Get Waveform from datastore
+		m_iEvent += 1;
+
 		StoreArray<EventWaveformPacket> evtwaves_ptr;
 		evtwaves_ptr.isRequired();
 		if (not evtwaves_ptr) {
 			return;
 		}
-		for (int c = 0; c < evtwaves_ptr.getEntries(); c++) {
-			EventWaveformPacket* evtwave_ptr = evtwaves_ptr[c];
-			unsigned int channelID = evtwave_ptr->GetChannelID();
-			//if (channelID>512) cout<<"wrong channelID: "<<channelID<<endl;
-			const vector<double> v_samples = evtwave_ptr->GetSamples();
-			//size_t nsamples = v_samples.size();
-			m_wf_buffer.insert(make_pair(channelID, v_samples));
-		}
-		m_iEvent += 1;
-		makePlots();
-		m_wf_buffer.clear();// clear wf buffer for next event
+        if (m_iEvent % m_refreshCount == 0) {
+            clear_graph();
+            for (int c = 0; c < evtwaves_ptr.getEntries(); c++) {
+                EventWaveformPacket* evtwave_ptr = evtwaves_ptr[c];
+                drawWaveforms(evtwave_ptr);
+            }
+            update_graph();
+        }
 		return;
 	}
 
 
-	void TOPCAFDQMModule::endRun()
-	{
+	void TOPCAFDQMModule::endRun() {
 	}
 
 
-	void TOPCAFDQMModule::terminate()
-	{
+	void TOPCAFDQMModule::terminate() {
 	}
 }
