@@ -69,7 +69,6 @@ else:
 mergemodule = register_module('WaveMerging')
 #plotsmodule = register_module("TOPCAF_DataQuality")
 dqmmodule = register_module("TOPCAFDQM")
-dqmmodule.param('framesPerEvent',1)
 
 progress = register_module('Progress')
 

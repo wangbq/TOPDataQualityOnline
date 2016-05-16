@@ -3,7 +3,9 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TCanvas.h"
+#include "TMultiGraph.h"
 #include <string>
+#include <set>
 #include <map>
 #include <vector>
 #include <deque>

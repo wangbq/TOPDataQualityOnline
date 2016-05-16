@@ -40,7 +40,6 @@ namespace Belle2 {
         for (auto scrod_it : m_channels) {
             int scrod_id = scrod_it.first;
             for (auto graph_it : scrod_it.second) {
-                int asci_id = graph_it.first;
                 TMultiGraph* mg = graph_it.second;
                 delete mg;
             }
@@ -52,11 +51,11 @@ namespace Belle2 {
         for (auto scrod_it : m_channels) {
             int scrod_id = scrod_it.first;
             for (auto graph_it : scrod_it.second) {
-                int asci_id = graph_it.first;
+                int asic_id = graph_it.first;
                 TMultiGraph* mg = graph_it.second;
-                m_canvas[scrod_id]->cd(asicid+1);
+                m_canvas[scrod_id]->cd(asic_id+1);
                 mg->Draw();
-                m_canvas[scrod_id]->GetPad(asicid+1)->Modified();
+                m_canvas[scrod_id]->GetPad(asic_id+1)->Modified();
             }
             m_canvas[scrod_id]->Update();
         }
