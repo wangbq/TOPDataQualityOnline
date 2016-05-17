@@ -34,6 +34,7 @@ namespace Belle2 {
         TCanvas* m_canvas[4];
         std::map<int, std::map<int, TMultiGraph*>> m_channels;
         std::map<int, std::map<int, std::set<int>>> m_channelLabels;
+		std::map<int, int> m_scrod_map;
     };
 
 }
