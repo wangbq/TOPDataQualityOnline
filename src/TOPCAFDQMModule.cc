@@ -113,7 +113,6 @@ namespace Belle2 {
                 drawWaveforms(evtwave_ptr);
             }
             update_graph();
-			sleep(10);
         }
 		return;
 	}
