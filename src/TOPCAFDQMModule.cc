@@ -26,16 +26,6 @@ namespace Belle2 {
 	}
 
 	void TOPCAFDQMModule::initialize() {
-		m_scrod_map.insert(make_pair(74,0));
-		m_scrod_map.insert(make_pair(88,1));
-		m_scrod_map.insert(make_pair(41,2));
-		m_scrod_map.insert(make_pair(103,3));
-        for (int i=0;i<4;i++) {
-            string cname = string("canvas_BS") + to_string(i);
-            m_canvas[i] = new TCanvas(cname.c_str(), cname.c_str(),800,800);
-			m_canvas[i]->Divide(4,4);
-            m_canvas[i]->Show();
-        }
 	}
 
 	void TOPCAFDQMModule::beginRun() {
@@ -58,11 +48,11 @@ namespace Belle2 {
             for (auto graph_it : scrod_it.second) {
                 int asic_id = graph_it.first;
                 TMultiGraph* mg = graph_it.second;
-                m_canvas[m_scrod_map[scrod_id]]->cd(asic_id+1);
+                m_canvas[scrod_id]->cd(asic_id+1);
                 mg->Draw("ALP");
-                m_canvas[m_scrod_map[scrod_id]]->GetPad(asic_id+1)->Modified();
+                m_canvas[scrod_id]->GetPad(asic_id+1)->Modified();
             }
-			m_canvas[m_scrod_map[scrod_id]]->Update();
+			m_canvas[scrod_id]->Update();
         }
     }
 
@@ -77,6 +67,12 @@ namespace Belle2 {
 			return;
 		}
 		int asicid = v.GetASICRow() + 4 * v.GetASICColumn();
+        if (m_canvas.find(scrodid) == m_canvas.end()) {
+            string cname = string("scrod_id_") + to_string(scrodid);
+            m_canvas[scrodid] = new TCanvas(cname.c_str(), cname.c_str(),800,800);
+			m_canvas[scrodid]->Divide(4,4);
+            m_canvas[scrodid]->Show();
+        }
 		if (m_channelLabels[scrodid].find(asicid) == m_channelLabels[scrodid].end()) {
 			string gname = string("channels") + to_string(scrodid) + string("_") + to_string(asicid);
 			m_channels[scrodid].insert(make_pair(asicid, new TMultiGraph(gname.c_str(), gname.c_str())));
