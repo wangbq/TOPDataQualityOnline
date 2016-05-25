@@ -8,6 +8,5 @@ Copy this program under modules/ directory in topcaf package. After compiling wi
 
 ## TODO
 
-1. drawWaveforms() crashes sometimes.
-2. Make the code work with other modules.
-3. Add more online plots.
+1. Make the code work with other modules.
+2. Add more online plots.
