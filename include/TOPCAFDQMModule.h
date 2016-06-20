@@ -29,8 +29,10 @@ namespace Belle2 {
         //void basicDebuggingPlots(EventWaveformPacket* ewp);
 
     private:
+        int m_iFrame;
         int m_iEvent;
         int m_refreshCount;
+        int m_framesPerEvent;
         //map: scrod_id --> (asic_id --> TMultiGraph)
         std::map<int, std::map<int, TMultiGraph*>> m_channels;
         std::map<int, std::map<int, std::set<int>>> m_channelLabels;

@@ -3,6 +3,7 @@
 #include <framework/datastore/StoreObjPtr.h>
 #include <framework/datastore/StoreArray.h>
 #include <framework/pcore/RbTuple.h>
+#include <topcaf/dataobjects/TopConfigurations.h>
 #include <utility>
 #include <iostream>
 #include <unistd.h>
@@ -18,7 +19,8 @@ namespace Belle2 {
 
     TOPCAFDQMModule::TOPCAFDQMModule() : Module(), m_iEvent(0) {
 		setDescription("TOPCAF online monitoring module");
-		addParam("refreshCount", m_refreshCount, "refresh count", 10);
+		addParam("refreshCount", m_refreshCount, "refresh count", 1);
+		addParam("framesPerEvent", m_framesPerEvent, "frames per event", 16);
 	}
 
 
@@ -96,21 +98,23 @@ namespace Belle2 {
 	}
 
 	void TOPCAFDQMModule::event() {
-		m_iEvent += 1;
-
 		StoreArray<EventWaveformPacket> evtwaves_ptr;
 		evtwaves_ptr.isRequired();
 		if (not evtwaves_ptr) {
 			return;
 		}
-        if (m_iEvent % m_refreshCount == 0) {
-            clear_graph();
-            for (int c = 0; c < evtwaves_ptr.getEntries(); c++) {
-                EventWaveformPacket* evtwave_ptr = evtwaves_ptr[c];
-                drawWaveforms(evtwave_ptr);
-            }
-            update_graph();
-        }
+		for (int c = 0; c < evtwaves_ptr.getEntries(); c++) {
+			EventWaveformPacket* evtwave_ptr = evtwaves_ptr[c];
+			drawWaveforms(evtwave_ptr);
+		}
+		m_iFrame += 1;
+		if (m_iFrame % m_framesPerEvent == 0) {
+			m_iEvent += 1;
+			if (m_iEvent % m_refreshCount == 0) {
+				update_graph();
+			}
+			clear_graph();
+		}
 		return;
 	}
 
