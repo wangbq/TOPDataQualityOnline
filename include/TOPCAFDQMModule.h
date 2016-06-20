@@ -33,10 +33,13 @@ namespace Belle2 {
         int m_iEvent;
         int m_refreshCount;
         int m_framesPerEvent;
+		int m_nhits;
         //map: scrod_id --> (asic_id --> TMultiGraph)
         std::map<int, std::map<int, TMultiGraph*>> m_channels;
         std::map<int, std::map<int, std::set<int>>> m_channelLabels;
         std::map<int, TCanvas*> m_canvas; // map: scrod_id --> TCanvas
+		TCanvas *m_canvas_nhits;
+		TH1F *m_h_nhits;
     };
 
 }

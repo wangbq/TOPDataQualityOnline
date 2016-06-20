@@ -58,16 +58,31 @@ else:
 #              'excludeBranchNames': ["EventWaveformPackets"]}
 #output.param(outputDict)
 
-#pedmodule = register_module('Pedestal')
-#pedmodule.param('mode', 1)
-#if args.ped:
-#    pedmodule.param('inputFileName', args.ped)
-#    pedmodule.param('conditions', 0)
-#else:
-#    pedmodule.param('conditions', 1)
+pedmodule = register_module('Pedestal')
+pedmodule.param('mode', 1)
+if args.ped:
+    pedmodule.param('inputFileName', args.ped)
+    pedmodule.param('conditions', 0)
+else:
+    pedmodule.param('conditions', 1)
 
 mergemodule = register_module('WaveMerging')
-#plotsmodule = register_module("TOPCAF_DataQuality")
+
+timemodule = register_module('WaveTimingFast')
+timeDict = {'time2TDC': 1.0}
+timemodule.param(timeDict)
+timemodule.param('threshold', 50.)  # always
+timemodule.param('threshold_n', -300.)  # must be -150 for "small calpulse"
+# it shouldn't be anything else
+# if it, is the code will crash -- on purpose
+
+timecalibmodule = register_module('DoubleCalPulse')
+timecalibmodule.param('calibrationTimeMin', 200)   # laser
+timecalibmodule.param('calibrationWidthMax', 20)
+timecalibmodule.param('calibrationWidthMin', 6)
+timecalibmodule.param('calibrationADCThreshold', -300)  # must be -150 for "small calpulse"
+timecalibmodule.param('calibrationADCThreshold_max', -800)
+
 dqmmodule = register_module("TOPCAFDQM")
 
 progress = register_module('Progress')
@@ -76,8 +91,10 @@ main.add_module(SRootReader)
 #main.add_module(histomanager)
 main.add_module(itopconfig)
 main.add_module(itopeventconverter)
-#main.add_module(pedmodule)
+main.add_module(pedmodule)
 main.add_module(mergemodule)
+main.add_module(timemodule)
+main.add_module(timecalibmodule)
 main.add_module(dqmmodule)
 main.add_module(progress)
 #main.add_module(plotsmodule)

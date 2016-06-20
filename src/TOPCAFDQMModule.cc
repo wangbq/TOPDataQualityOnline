@@ -4,6 +4,7 @@
 #include <framework/datastore/StoreArray.h>
 #include <framework/pcore/RbTuple.h>
 #include <topcaf/dataobjects/TopConfigurations.h>
+#include <topcaf/dataobjects/TOPCAFDigit.h>
 #include <utility>
 #include <iostream>
 #include <unistd.h>
@@ -17,7 +18,7 @@ using namespace std;
 namespace Belle2 {
 	REG_MODULE(TOPCAFDQM)
 
-    TOPCAFDQMModule::TOPCAFDQMModule() : Module(), m_iEvent(0) {
+    TOPCAFDQMModule::TOPCAFDQMModule() : Module(), m_iFrame(0), m_iEvent(0), m_nhits(0) {
 		setDescription("TOPCAF online monitoring module");
 		addParam("refreshCount", m_refreshCount, "refresh count", 1);
 		addParam("framesPerEvent", m_framesPerEvent, "frames per event", 16);
@@ -28,6 +29,9 @@ namespace Belle2 {
 	}
 
 	void TOPCAFDQMModule::initialize() {
+		m_canvas_nhits = new TCanvas("canvas_nhits","canvas_nhits",800,600);
+		m_h_nhits = new TH1F("h_nhits","h_nhits",100,0,100);
+		m_h_nhits->Draw();
 	}
 
 	void TOPCAFDQMModule::beginRun() {
@@ -46,6 +50,10 @@ namespace Belle2 {
     }
 
     void TOPCAFDQMModule::update_graph() {
+		//m_canvas_nhits->cd();
+		//m_h_nhits->Draw();
+		m_canvas_nhits->GetPad(0)->Modified();
+		m_canvas_nhits->Update();
         for (auto scrod_it : m_channels) {
             int scrod_id = scrod_it.first;
 			if (m_canvas.find(scrod_id) == m_canvas.end()) {
@@ -99,6 +107,7 @@ namespace Belle2 {
 
 	void TOPCAFDQMModule::event() {
 		StoreArray<EventWaveformPacket> evtwaves_ptr;
+		StoreArray<TOPCAFDigit> digits_ptr;
 		evtwaves_ptr.isRequired();
 		if (not evtwaves_ptr) {
 			return;
@@ -107,9 +116,18 @@ namespace Belle2 {
 			EventWaveformPacket* evtwave_ptr = evtwaves_ptr[c];
 			drawWaveforms(evtwave_ptr);
 		}
+		for (int c=0; c<digits_ptr.getEntries(); c++) {
+			TOPCAFDigit *digit = digits_ptr[c];
+			if (digit->GetADCHeight()>0) {
+				m_nhits += 1;
+			}
+		}
 		m_iFrame += 1;
 		if (m_iFrame % m_framesPerEvent == 0) {
 			m_iEvent += 1;
+			cout<<"nhits: "<<m_nhits<<endl;
+			m_h_nhits->Fill(m_nhits);
+			m_nhits=0;
 			if (m_iEvent % m_refreshCount == 0) {
 				update_graph();
 			}
