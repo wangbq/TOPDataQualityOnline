@@ -118,7 +118,11 @@ namespace Belle2 {
 		}
 		for (int c=0; c<digits_ptr.getEntries(); c++) {
 			TOPCAFDigit *digit = digits_ptr[c];
-			if (digit->GetADCHeight()>0) {
+			double width=digit->GetWidth();
+			double height=digit->GetADCHeight();
+			int flag=digit->GetFlag();
+			double corr_time=digit->GetCorrTime();
+			if (width>3 && width<10 && height>100 && height<2048 && flag>0 && corr_time!=0) {
 				m_nhits += 1;
 			}
 		}
