@@ -1,6 +1,6 @@
-# TOPCAFDQM
+# TOPDataQualityOnline
 
-Online monitoring software package for TOPCAF.
+Online monitoring software package.
 
 ## Usage
 
