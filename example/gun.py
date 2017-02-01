@@ -115,7 +115,7 @@ main.add_module(topreco)
 #topddt = register_module('TOPDDT')
 #topddt.param('outputFileName','TOPDDT_gun.root')
 #main.add_module(topddt)
-dqmmodule = register_module("TOPCAFDQM")
+dqmmodule = register_module("TOPDataQualityOnline")
 main.add_module(dqmmodule)
 
 # Output

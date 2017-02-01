@@ -12,10 +12,10 @@
 #include <utility>
 
 namespace Belle2 {
-    class TOPCAFDQMModule : public Module {
+    class TOPDataQualityOnlineModule : public Module {
         typedef unsigned long long topcaf_channel_id_t;
     public:
-        TOPCAFDQMModule();
+        TOPDataQualityOnlineModule();
 
         void defineHisto();
         void initialize();

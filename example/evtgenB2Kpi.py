@@ -54,7 +54,7 @@ ntuple = register_module('TOPNtuple')
 ntuple.param('outputFileName', 'ntupleB2Kpi.root')
 main.add_module(ntuple)
 
-dqmmodule = register_module("TOPCAFDQM")
+dqmmodule = register_module("TOPDataQualityOnline")
 dqmmodule.param('framesPerEvent',1)
 main.add_module(dqmmodule)
 

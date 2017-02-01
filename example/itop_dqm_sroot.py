@@ -83,7 +83,7 @@ timecalibmodule.param('calibrationWidthMin', 6)
 timecalibmodule.param('calibrationADCThreshold', -300)  # must be -150 for "small calpulse"
 timecalibmodule.param('calibrationADCThreshold_max', -800)
 
-dqmmodule = register_module("TOPCAFDQM")
+dqmmodule = register_module("TOPDataQualityOnline")
 
 progress = register_module('Progress')
 

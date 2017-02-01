@@ -23,7 +23,7 @@ main.add_module(evtinput)
 output = register_module('RootOutput')
 main.add_module(output)
 
-dqmmodule = register_module("TOPCAFDQM")
+dqmmodule = register_module("TOPDataQualityOnline")
 dqmmodule.param('framesPerEvent',1)
 main.add_module(dqmmodule)
 

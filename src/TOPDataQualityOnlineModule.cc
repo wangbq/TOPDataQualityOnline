@@ -1,5 +1,5 @@
 #include <framework/core/HistoModule.h>
-#include <topcaf/modules/TOPCAFDQM/TOPCAFDQMModule.h>
+#include <topcaf/modules/TOPDataQualityOnline/TOPDataQualityOnlineModule.h>
 #include <framework/datastore/StoreObjPtr.h>
 #include <framework/datastore/StoreArray.h>
 #include <framework/pcore/RbTuple.h>
@@ -16,28 +16,28 @@
 using namespace std;
 
 namespace Belle2 {
-	REG_MODULE(TOPCAFDQM)
+	REG_MODULE(TOPDataQualityOnline)
 
-    TOPCAFDQMModule::TOPCAFDQMModule() : Module(), m_iFrame(0), m_iEvent(0), m_nhits(0) {
+    TOPDataQualityOnlineModule::TOPDataQualityOnlineModule() : Module(), m_iFrame(0), m_iEvent(0), m_nhits(0) {
 		setDescription("TOPCAF online monitoring module");
 		addParam("refreshCount", m_refreshCount, "refresh count", 1);
 		addParam("framesPerEvent", m_framesPerEvent, "frames per event", 16);
 	}
 
 
-	void TOPCAFDQMModule::defineHisto() {
+	void TOPDataQualityOnlineModule::defineHisto() {
 	}
 
-	void TOPCAFDQMModule::initialize() {
+	void TOPDataQualityOnlineModule::initialize() {
 		m_canvas_nhits = new TCanvas("canvas_nhits","canvas_nhits",800,600);
 		m_h_nhits = new TH1F("h_nhits","h_nhits",100,0,100);
 		m_h_nhits->Draw();
 	}
 
-	void TOPCAFDQMModule::beginRun() {
+	void TOPDataQualityOnlineModule::beginRun() {
 	}
 
-    void TOPCAFDQMModule::clear_graph() {
+    void TOPDataQualityOnlineModule::clear_graph() {
         for (auto scrod_it : m_channels) {
             int scrod_id = scrod_it.first;
             for (auto graph_it : scrod_it.second) {
@@ -49,7 +49,7 @@ namespace Belle2 {
         }
     }
 
-    void TOPCAFDQMModule::update_graph() {
+    void TOPDataQualityOnlineModule::update_graph() {
 		//m_canvas_nhits->cd();
 		//m_h_nhits->Draw();
 		m_canvas_nhits->GetPad(0)->Modified();
@@ -73,7 +73,7 @@ namespace Belle2 {
         }
     }
 
-	void TOPCAFDQMModule::drawWaveforms(EventWaveformPacket* ewp) {
+	void TOPDataQualityOnlineModule::drawWaveforms(EventWaveformPacket* ewp) {
 		const EventWaveformPacket& v = *ewp;
 		vector<double> y = v.GetSamples();
 		if (y.empty()) {
@@ -105,7 +105,7 @@ namespace Belle2 {
 		mg->Add(g);
 	}
 
-	void TOPCAFDQMModule::event() {
+	void TOPDataQualityOnlineModule::event() {
 		StoreArray<EventWaveformPacket> evtwaves_ptr;
 		StoreArray<TOPCAFDigit> digits_ptr;
 		evtwaves_ptr.isRequired();
@@ -141,10 +141,10 @@ namespace Belle2 {
 	}
 
 
-	void TOPCAFDQMModule::endRun() {
+	void TOPDataQualityOnlineModule::endRun() {
 	}
 
 
-	void TOPCAFDQMModule::terminate() {
+	void TOPDataQualityOnlineModule::terminate() {
 	}
 }
